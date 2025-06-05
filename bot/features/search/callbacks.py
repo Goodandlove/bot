@@ -11,6 +11,7 @@ from config import Config
 from bot.core.redis_manager import RedisManager
 
 from bot.features.search.services import SearchService
+from bot.features.search.handlers.results import show_next_properties
 from bot.core.states import States
 from bot.presentation.keyboards.common import main_menu
 from bot.presentation.keyboards.common import pagination_keyboard
@@ -25,6 +26,8 @@ from bot.data.repositories.property import get_property_by_id
 from bot.presentation.keyboards.search import room_selection
 from bot.presentation.cards.search import get_all_photos, format_property_card
 from bot.data.repositories.property import get_property_by_id
+from bot.core.utils import format_object_number
+ 
 
 logger = logging.getLogger(__name__)
 redis_manager = RedisManager()
@@ -279,7 +282,7 @@ async def show_more_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     results = redis_manager.get_search_results(user_id)
     
     # Показываем следующие объекты
-    # await show_next_properties(update, context, current_index, results)
+    await show_next_properties(update, context, current_index, results)
 
 
 # Обновленный обработчик избранного, формирование сообщений:
@@ -296,8 +299,8 @@ async def favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # Формируем полный номер объекта
     property_data = get_property_by_id(property_id)
-    if property_data:
-        ad_number = f"{property_id}{Config.CITY_CODE}{property_data['type']}"
+    if property_data: 
+        ad_number = format_object_number(property_data['id'], property_data['type'])
         
 
     if is_favorite:

@@ -53,3 +53,17 @@ def details_keyboard(property_id):
         [InlineKeyboardButton("📷 Показать все фото", callback_data=f"details_{property_id}")],
         [InlineKeyboardButton("❤️ В избранное", callback_data=f"fav_{property_id}")]
     ])
+
+
+# bot/presentation/keyboards/common.py
+
+def navigation_keyboard(has_more=False):
+    """Клавиатура навигации внизу экрана"""
+    buttons = []
+    
+    if has_more:
+        buttons.append("🔍 Показать еще")
+    
+    buttons.append("🔄 Новый поиск")
+    
+    return ReplyKeyboardMarkup([buttons], resize_keyboard=True, one_time_keyboard=True)

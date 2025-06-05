@@ -6,6 +6,7 @@ from bot.presentation.keyboards.search import details_keyboard
 import logging
 from bot.core.utils import format_price, format_date
 from config import Config
+from bot.core.utils import format_object_number
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +91,8 @@ def format_property_card(property_data, user_info, detailed=False):
     prop_id = property_data.get('id')
     prop_type = property_data.get('type')
     
-    # Формируем номер объявления: используем prop_type вместо room_count
-    ad_number = f"{prop_id}{Config.CITY_CODE}{prop_type}"
+    # Формируем номер объявления: используем prop_type вместо room_count 
+    ad_number = format_object_number(property_data['id'], property_data['type'])
 
     # Базовые данные
     flat_type = FLAT_TYPES.get(str(prop_type), "Квартира")

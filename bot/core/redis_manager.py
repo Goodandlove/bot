@@ -46,17 +46,7 @@ class RedisManager:
     
     
     
-   
-    def get_search_results(self, user_id):
-        """Получает результаты поиска"""
-        results_json = self.connection.hget(f'user:{user_id}:session', 'search_results')
-        return json.loads(results_json) if results_json else None
 
-    def get_search_index(self, user_id):
-        """Получает текущий индекс поиска"""
-        index = self.connection.hget(f'user:{user_id}:session', 'search_index')
-        return int(index) if index else 0
-    
     def add_favorite(self, user_id, property_id):
         """Добавляет объект в избранное пользователя"""
         self.connection.sadd(f'user:{user_id}:favorites', property_id)
@@ -94,11 +84,32 @@ class RedisManager:
         for prop_id in favorites:
             self.connection.sadd(key, prop_id)
 
+
+
+     
+
+    def set_search_results(self, user_id, results):
+        """Сохраняет результаты поиска в Redis"""
+        results_json = json.dumps(results)
+        self.connection.hset(f'user:{user_id}:session', 'search_results', results_json)
+    
+    def get_search_results(self, user_id):
+        """Получает результаты поиска из Redis"""
+        results_json = self.connection.hget(f'user:{user_id}:session', 'search_results')
+        return json.loads(results_json) if results_json else []
+    
+    def set_search_index(self, user_id, index):
+        """Устанавливает текущий индекс поиска"""
+        self.connection.hset(f'user:{user_id}:session', 'search_index', index)
+    
+    def get_search_index(self, user_id):
+        """Получает текущий индекс поиска"""
+        index = self.connection.hget(f'user:{user_id}:session', 'search_index')
+        return int(index) if index else 0
+    
     def clear_search_session(self, user_id):
-        """Очищает только данные поиска, сохраняя избранное"""
-        keys_to_delete = [
-            f'user:{user_id}:session:search_results',
-            f'user:{user_id}:session:search_index',
-            f'user:{user_id}:state'
-        ]
-        self.connection.delete(*keys_to_delete)  
+        """Очищает данные поиска, сохраняя избранное"""
+        self.connection.hdel(f'user:{user_id}:session', 'search_results', 'search_index')
+        self.connection.delete(f'user:{user_id}:state')
+ 
+    

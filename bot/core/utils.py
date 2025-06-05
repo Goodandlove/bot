@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime
+from config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -22,3 +23,8 @@ def format_date(date_str):
         return date_str
     except Exception:
         return date_str
+    
+
+def format_object_number(property_id, property_type):
+    """Форматирует номер объекта по стандарту"""
+    return f"{property_id}{Config.CITY_CODE}{property_type}"
